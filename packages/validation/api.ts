@@ -1268,12 +1268,17 @@ export const CreateProjectSchema = z
 
 export const ListProjectsResponseSchema = z
 	.object({
-		projects: z.array(ProjectSchema).openapi({
-			description: "List of projects",
+		nova: z.array(ProjectSchema).openapi({
+			description: "User-created projects with sm_project_* prefix",
+		}),
+		developer: z.array(ProjectSchema).openapi({
+			description:
+				"All other containerTags (Claude Code sessions, custom tags)",
 		}),
 	})
 	.openapi({
-		description: "Response containing list of projects",
+		description:
+			"Response containing nova (user-created) and developer (all other) projects",
 	})
 
 export const DeleteProjectSchema = z

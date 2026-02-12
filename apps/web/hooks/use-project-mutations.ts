@@ -7,7 +7,8 @@ import { useProject } from "@/stores"
 
 export function useProjectMutations() {
 	const queryClient = useQueryClient()
-	const { selectedProject, setSelectedProject } = useProject()
+	const { selectedProjects, setSelectedProjects, setSelectedProject } =
+		useProject()
 
 	const createProjectMutation = useMutation({
 		mutationFn: async (input: string | { name: string; emoji?: string }) => {
@@ -28,9 +29,8 @@ export function useProjectMutations() {
 			toast.success("Project created successfully!")
 			queryClient.invalidateQueries({ queryKey: ["projects"] })
 
-			// Automatically switch to the newly created project
 			if (data?.containerTag) {
-				setSelectedProject(data.containerTag)
+				setSelectedProjects([data.containerTag])
 			}
 		},
 		onError: (error) => {
@@ -64,12 +64,16 @@ export function useProjectMutations() {
 			toast.success("Project deleted successfully")
 			queryClient.invalidateQueries({ queryKey: ["projects"] })
 
-			// If we deleted the selected project, switch to default
 			const deletedProject = queryClient
 				.getQueryData<any[]>(["projects"])
 				?.find((p) => p.id === variables.projectId)
-			if (deletedProject?.containerTag === selectedProject) {
-				setSelectedProject("sm_project_default")
+			if (
+				deletedProject?.containerTag &&
+				selectedProjects.includes(deletedProject.containerTag)
+			) {
+				setSelectedProjects(
+					selectedProjects.filter((tag) => tag !== deletedProject.containerTag),
+				)
 			}
 		},
 		onError: (error) => {

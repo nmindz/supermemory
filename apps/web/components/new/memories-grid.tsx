@@ -95,7 +95,7 @@ export function MemoriesGrid({
 	highlightsProps,
 }: MemoriesGridProps) {
 	const { user } = useAuth()
-	const { selectedProject } = useProject()
+	const { selectedProjects, isNovaSpaces } = useProject()
 	const isMobile = useIsMobile()
 	const [selectedCategories, setSelectedCategories] = useQueryState(
 		"categories",
@@ -103,11 +103,11 @@ export function MemoriesGrid({
 	)
 
 	const { data: facetsData } = useQuery({
-		queryKey: ["document-facets", selectedProject],
+		queryKey: ["document-facets", selectedProjects],
 		queryFn: async (): Promise<FacetsResponse> => {
 			const response = await $fetch("@post/documents/documents/facets", {
 				body: {
-					containerTags: selectedProject ? [selectedProject] : undefined,
+					containerTags: isNovaSpaces ? undefined : selectedProjects,
 				},
 				disableValidation: true,
 			})
@@ -130,7 +130,7 @@ export function MemoriesGrid({
 		hasNextPage,
 		fetchNextPage,
 	} = useInfiniteQuery<DocumentsResponse, Error>({
-		queryKey: ["documents-with-memories", selectedProject, selectedCategories],
+		queryKey: ["documents-with-memories", selectedProjects, selectedCategories],
 		initialPageParam: 1,
 		queryFn: async ({ pageParam }) => {
 			const response = await $fetch("@post/documents/documents", {
@@ -139,7 +139,7 @@ export function MemoriesGrid({
 					limit: PAGE_SIZE,
 					sort: "createdAt",
 					order: "desc",
-					containerTags: selectedProject ? [selectedProject] : undefined,
+					containerTags: isNovaSpaces ? undefined : selectedProjects,
 					categories:
 						selectedCategories.length > 0 ? selectedCategories : undefined,
 				},
@@ -343,9 +343,7 @@ export function MemoriesGrid({
 							)}
 							<div className="w-[216px] shrink-0">
 								<GraphCard
-									containerTags={
-										selectedProject ? [selectedProject] : undefined
-									}
+									containerTags={isNovaSpaces ? undefined : selectedProjects}
 									width={200}
 									height={220}
 								/>

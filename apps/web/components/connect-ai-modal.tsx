@@ -155,7 +155,10 @@ export function ConnectAIModal({
 			if (response.error) {
 				throw new Error(response.error?.message || "Failed to load projects")
 			}
-			return response.data?.projects || []
+			return [
+				...(response.data?.nova || []),
+				...(response.data?.developer || []),
+			]
 		},
 		staleTime: 30 * 1000,
 	})

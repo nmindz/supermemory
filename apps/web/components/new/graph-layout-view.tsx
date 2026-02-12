@@ -17,12 +17,15 @@ interface GraphLayoutViewProps {
 }
 
 export const GraphLayoutView = memo<GraphLayoutViewProps>(({ isChatOpen }) => {
-	const { selectedProject } = useProject()
+	const { selectedProjects, isNovaSpaces } = useProject()
 	const { documentIds: allHighlightDocumentIds } = useGraphHighlights()
-	const [isShareModalOpen, setIsShareModalOpen] = useQueryState("share", shareParam)
+	const [isShareModalOpen, setIsShareModalOpen] = useQueryState(
+		"share",
+		shareParam,
+	)
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 
-	const containerTags = selectedProject ? [selectedProject] : undefined
+	const containerTags = isNovaSpaces ? undefined : selectedProjects
 
 	const handleShare = useCallback(() => {
 		setIsShareModalOpen(true)
